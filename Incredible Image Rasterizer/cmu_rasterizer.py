@@ -1,17 +1,35 @@
 from PIL import Image as img
 from PIL import ImageFilter
+from sklearn.cluster import KMeans
 import numpy as np
 
-image_file_path = "C:/Users/344951520/Downloads/cheese.png"
+image_file_path = "C:/Users/344951520/Downloads/firefox2.jpg"
 
 # Open the image file, resize it to fit the canvas, and convert it to a numpy array
 canvas_size = (64,64)
-image = img.open(image_file_path).filter(ImageFilter.SHARPEN).filter(ImageFilter.SHARPEN).resize(canvas_size, img.BICUBIC)
+image = img.open(image_file_path).resize(canvas_size)
 image_array = np.array(image)
 width,height=image.size
 
 
 generate_rainbow = False
+enable_horizontal_merge = True
+enable_vertical_merge = False  # Separate toggle for vertical merges
+simplify_image = True
+
+if simplify_image:
+    # Reduce to 32 most common colors using k-means clustering
+    pixels = image_array.reshape((-1, 4))  # Reshape to a 2D array
+    kmeans = KMeans(n_clusters=8, random_state=0).fit(pixels)
+    # Map each pixel to the nearest cluster center (most common color)
+    common_colors = kmeans.cluster_centers_.astype(int)
+    labels = kmeans.labels_
+    new_pixels = common_colors[labels]
+    # Reshape back to the original image shape
+    new_image_array = new_pixels.reshape(image_array.shape)
+
+    # From here, use new_image_array instead of image_array for further processing
+    image_array = new_image_array  # For simplicity in this example, overwrite the original image_array
 
 
 # Check if image has opacity, if it does not, add an alpha channel that is always 255
@@ -31,7 +49,7 @@ def find_horizontal_merges(image_array):
             r, g, b, a = image_array[i, start_j]
             if a > 0:  # Only consider non-transparent pixels
                 opacity = int(a / 255 * 100)
-                rectangles.append({"x": start_j, "y": i, "width": width, "height": 1, "color": (r, g, b, opacity)})
+                rectangles.append({"x": start_j, "y": i, "width": width + 0.5, "height": 1, "color": (r, g, b, opacity)})
             j += 1
     return rectangles
 
@@ -50,6 +68,16 @@ def merge_vertical(rectangles):
         merged_rectangles.append(base)
     return merged_rectangles
 
+def create_individual_rectangles(image_array):
+    rectangles = []
+    for y in range(image_array.shape[0]):
+        for x in range(image_array.shape[1]):
+            r, g, b, a = image_array[y, x]
+            if a > 0:  # Only consider non-transparent pixels
+                opacity = int(a / 255 * 100)
+                rectangles.append({"x": x, "y": y, "width": 1, "height": 1, "color": (r, g, b, opacity)})
+    return rectangles
+
 def convert_to_code(rectangles):
     lines_of_code = []
     for rect in rectangles:
@@ -57,12 +85,16 @@ def convert_to_code(rectangles):
         lines_of_code.append(f"Rect({rect['x']}, {rect['y']}, {rect['width']}, {rect['height']}, fill=rgb({r}, {g}, {b}), opacity={opacity})")
     return lines_of_code
 
-# Find horizontal merges first
-horizontal_merged = find_horizontal_merges(image_array)
-# Then attempt to merge these horizontally merged rectangles vertically
-final_rectangles = merge_vertical(horizontal_merged)
+# Depending on the enable_merge flag, either perform merging or create individual rectangles
+rectangles = create_individual_rectangles(image_array)
+if enable_horizontal_merge:
+    rectangles = find_horizontal_merges(image_array)
+if enable_vertical_merge:
+    rectangles = merge_vertical(rectangles)
+
+
 # Convert the merged rectangles to lines of code
-lines_of_code = convert_to_code(final_rectangles)
+lines_of_code = convert_to_code(rectangles)
 
 # Save the lines of code to a file
 file_name = "Incredible Image Rasterizer/rasterized_image_output.py"
