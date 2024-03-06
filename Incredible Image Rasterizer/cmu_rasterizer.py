@@ -1,100 +1,54 @@
 from PIL import Image as img
-from PIL import ImageFilter
 from sklearn.cluster import KMeans
 import numpy as np
 
-image_file_path = "C:/Users/344951520/Downloads/firefox2.jpg"
+image_file_path = "C:/Users/344951520/Downloads/firefox2.jpg"  # Update this to your image file path
 
-# Open the image file, resize it to fit the canvas, and convert it to a numpy array
-canvas_size = (64,64)
-image = img.open(image_file_path).resize(canvas_size)
+# Open the image file and convert it to a numpy array
+image = img.open(image_file_path)
 image_array = np.array(image)
-width,height=image.size
-
-
 generate_rainbow = False
-enable_horizontal_merge = True
-enable_vertical_merge = False  # Separate toggle for vertical merges
-simplify_image = True
+width, height = image.size
 
-if simplify_image:
-    # Reduce to 32 most common colors using k-means clustering
-    pixels = image_array.reshape((-1, 4))  # Reshape to a 2D array
-    kmeans = KMeans(n_clusters=8, random_state=0).fit(pixels)
-    # Map each pixel to the nearest cluster center (most common color)
-    common_colors = kmeans.cluster_centers_.astype(int)
-    labels = kmeans.labels_
-    new_pixels = common_colors[labels]
-    # Reshape back to the original image shape
-    new_image_array = new_pixels.reshape(image_array.shape)
-
-    # From here, use new_image_array instead of image_array for further processing
-    image_array = new_image_array  # For simplicity in this example, overwrite the original image_array
-
-
-# Check if image has opacity, if it does not, add an alpha channel that is always 255
+# Ensure we work with RGBA for uniformity
 if image_array.shape[2] == 3:
-    image_array = np.dstack([image_array, np.full((image_array.shape[0], image_array.shape[1]), 255)])
+    image_array = np.dstack([image_array, np.ones((image_array.shape[0], image_array.shape[1], 1)) * 255]).astype(np.uint8)
 
+# Flatten the image array and apply k-means clustering to reduce to 8 colors
+pixels = image_array.reshape((-1, 4))
+kmeans = KMeans(n_clusters=8, random_state=0).fit(pixels)
+new_pixels = kmeans.cluster_centers_[kmeans.labels_].round().astype(int)
 
-def find_horizontal_merges(image_array):
-    rectangles = []
-    for i in range(image_array.shape[0]):
-        j = 0
-        while j < image_array.shape[1]:
-            start_j = j
-            while j < image_array.shape[1] and np.array_equal(image_array[i, j], image_array[i, start_j]):
-                j += 1
-            width = j - start_j
-            r, g, b, a = image_array[i, start_j]
-            if a > 0:  # Only consider non-transparent pixels
-                opacity = int(a / 255 * 100)
-                rectangles.append({"x": start_j, "y": i, "width": width + 0.5, "height": 1, "color": (r, g, b, opacity)})
-            j += 1
-    return rectangles
+# Reshape back to the original image shape
+new_image_array = new_pixels.reshape(image_array.shape)
 
-def merge_vertical(rectangles):
-    merged_rectangles = []
-    while rectangles:
-        base = rectangles.pop(0)
-        i = 0
-        while i < len(rectangles):
-            rect = rectangles[i]
-            if rect["x"] == base["x"] and rect["width"] == base["width"] and rect["color"] == base["color"] and rect["y"] == base["y"] + base["height"]:
-                base["height"] += rect["height"]
-                rectangles.pop(i)
+# Function to generate simplified drawing instructions using Rect() for dots and lines
+def generate_drawing_instructions(image_array):
+    height, width, _ = image_array.shape
+    instructions = []
+
+    for y in range(height):
+        x = 0
+        while x < width:
+            current_color = image_array[y, x][:3]
+            start_x = x
+            
+            # Move x to the end of the line of the same color
+            while x < width and np.array_equal(image_array[y, x][:3], current_color):
+                x += 1
+
+            line_length = x - start_x
+
+            # For both dots and lines, we use Rect. Dots are simply 1x1 Rects.
+            color_str = f"rgb({current_color[0]}, {current_color[1]}, {current_color[2]})"
+            if line_length == 1:
+                instructions.append(f"Rect({start_x}, {y}, 1, 1, fill={color_str})")
             else:
-                i += 1
-        merged_rectangles.append(base)
-    return merged_rectangles
+                instructions.append(f"Rect({start_x}, {y}, {line_length}, 1, fill={color_str})")
 
-def create_individual_rectangles(image_array):
-    rectangles = []
-    for y in range(image_array.shape[0]):
-        for x in range(image_array.shape[1]):
-            r, g, b, a = image_array[y, x]
-            if a > 0:  # Only consider non-transparent pixels
-                opacity = int(a / 255 * 100)
-                rectangles.append({"x": x, "y": y, "width": 1, "height": 1, "color": (r, g, b, opacity)})
-    return rectangles
+    return instructions
 
-def convert_to_code(rectangles):
-    lines_of_code = []
-    for rect in rectangles:
-        r, g, b, opacity = rect["color"]
-        lines_of_code.append(f"Rect({rect['x']}, {rect['y']}, {rect['width']}, {rect['height']}, fill=rgb({r}, {g}, {b}), opacity={opacity})")
-    return lines_of_code
-
-# Depending on the enable_merge flag, either perform merging or create individual rectangles
-rectangles = create_individual_rectangles(image_array)
-if enable_horizontal_merge:
-    rectangles = find_horizontal_merges(image_array)
-if enable_vertical_merge:
-    rectangles = merge_vertical(rectangles)
-
-
-# Convert the merged rectangles to lines of code
-lines_of_code = convert_to_code(rectangles)
+instructions = generate_drawing_instructions(new_image_array)
 
 # Save the lines of code to a file
 file_name = "Incredible Image Rasterizer/rasterized_image_output.py"
@@ -103,8 +57,8 @@ with open(file_name, "w") as file:
     if generate_rainbow:
         file.write("from colorsys import hsv_to_rgb\n\napp.stepsPerSecond=60\napp.hue=0\napp.hueStep=0.01\n")
     file.write(f"app.setMaxShapeCount(4096)\napp.background = rgb(0,0,0)\n\nwidth={width}\nheight={height}\n\n\n")
-    for line in lines_of_code:
-        file.write(f"{line}\n")
+    for instruction in instructions:
+        file.write(f"{instruction}\n")
 
     file.write("\n\n# Move drawing to the center of the canvas\nfor i in app.group:\n\ti.left+=200-width/2\n\ti.top+=200-height/2")
     if generate_rainbow:
