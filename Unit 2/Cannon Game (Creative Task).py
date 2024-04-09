@@ -18,6 +18,8 @@ Rect(30,350,40,20,fill='darkSlateGray'),
 Arc(30,360,25,20,180,180,fill='darkSlateGray'), # Back of arc coordinates: 20,360
 Circle(70,360,1,fill=None)
 )
+cannonball = Circle(cannon.children[2].centerX,cannon.children[2].centerY,5,fill='black')
+cannonball.visible = False
 cannon.step = 0
 
 Rect(0,400,50,20,align='bottom-left',fill='saddleBrown')
@@ -30,6 +32,13 @@ powerSlider = Line(5,250,35,250,visible=False)
 
 # -72.24737361476635
 # 9.19365166790858
+
+def mapToRange(value:float, leftMin:float, leftMax:float, rightMin:float, rightMax:float) -> float:
+    leftSpan = leftMax - leftMin
+    rightSpan = rightMax - rightMin
+    valueScaled = (value - leftMin) / leftSpan
+
+    return rightMin + (valueScaled * rightSpan)
 
 def onMouseMove(mouseX,mouseY):
     cannonCenterY = (cannon.bottom - cannon.top) / 2 + cannon.top
@@ -54,7 +63,20 @@ def onMousePress(mouseX,mouseY):
             app.firing = True
             cannon.step = 0
             # Oval(cannon.children[2].centerX,cannon.children[2].centerY,)
-            app.firingPower = powerSlider.y1 - 
+            app.firingPower = powerSlider.y1 - powerBar.bottom
+            print(app.firingPower)
+            app.firingStep = 0
+            # powerSlider.visible=False
+            
+            cannonball.centerX = cannon.children[2].centerX
+            cannonball.centery = cannon.children[2].centerY
+            cannonball.step = 0
+            multiplier = mapToRange(abs(powerSlider.y1 - powerBar.bottom), 0, 250, 0, 10)
+            print(f'multiplier: {multiplier}')
+            cannonball.xSpeed = dcos(cannon.rotateAngle) * multiplier
+            cannonball.ySpeed = dsin(cannon.rotateAngle) * multiplier
+            print(cannonball.xSpeed, cannonball.ySpeed)
+            app.allowMove = True
 
 
 def onStep():
