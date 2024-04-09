@@ -1,6 +1,3 @@
-class app:
-    pass
-
 app.background = 'skyBlue'
 app.step = 0
 app.startStep = 0
@@ -10,12 +7,16 @@ app.allowMove = True
 app.powerSlide = False
 app.firing = False
 app.firingStep = 0
+app.firingPower = 0
+
+app.pew = Sound('https://cdn.script-ware.net/pew.mp3')
 
 # Oval(55,360,15,26,fill='black')
 # Oval(70,360,15,26,fill='black')
 cannon = Group(
 Rect(30,350,40,20,fill='darkSlateGray'),
-Arc(30,360,25,20,180,180,fill='darkSlateGray') # Back of arc coordinates: 20,360
+Arc(30,360,25,20,180,180,fill='darkSlateGray'), # Back of arc coordinates: 20,360
+Circle(70,360,1,fill=None)
 )
 cannon.step = 0
 
@@ -52,6 +53,8 @@ def onMousePress(mouseX,mouseY):
             app.powerSlide = False
             app.firing = True
             cannon.step = 0
+            # Oval(cannon.children[2].centerX,cannon.children[2].centerY,)
+            app.firingPower = powerSlider.y1 - 
 
 
 def onStep():
@@ -64,27 +67,7 @@ def onStep():
         elif powerSlider.y1 >= powerBar.bottom:
             app.slideInc = abs(app.slideInc)
     if app.firing:
-        fix = False
-        if cannon.step < 5:
-            cannon.children[0].width += 2
-            cannon.children[0].height -= 2
-        if cannon.step >= 5 and cannon.step < 8:
-            cannon.children[0].width -= 1.666
-            cannon.children[0].height += 1.666
-            fix = True
-        if fix:
-            cannon.children[0].width = 40
-            cannon.children[0].height = 20
-        
-        cannon.step += 1
-        # print(cannon.step)
-        
-            
-        
-
-
-
-
-
+        app.pew.play(restart=True)
+        app.firing = False
 
 
