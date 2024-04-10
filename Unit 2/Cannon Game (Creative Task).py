@@ -2,12 +2,17 @@ app.background = 'skyBlue'
 app.step = 0
 app.startStep = 0
 app.endStep = 0
+# app.stepsPerSecond = 30
 app.slideInc = 6
 app.allowMove = True
 app.powerSlide = False
 app.firing = False
 app.firingStep = 0
 app.firingPower = 0
+app.gravity = True
+app.gravityForce = 9.81 # m/s^
+
+
 
 app.pew = Sound('https://cdn.script-ware.net/pew.mp3')
 
@@ -20,6 +25,7 @@ Circle(70,360,1,fill=None)
 )
 cannonball = Circle(cannon.children[2].centerX,cannon.children[2].centerY,5,fill='black')
 cannonball.visible = False
+cannonball.mass = 5 # kg
 cannon.step = 0
 
 Rect(0,400,50,20,align='bottom-left',fill='saddleBrown')
@@ -69,14 +75,16 @@ def onMousePress(mouseX,mouseY):
             # powerSlider.visible=False
             
             cannonball.centerX = cannon.children[2].centerX
-            cannonball.centery = cannon.children[2].centerY
+            cannonball.centerY = cannon.children[2].centerY
             cannonball.step = 0
             multiplier = mapToRange(abs(powerSlider.y1 - powerBar.bottom), 0, 250, 0, 10)
             print(f'multiplier: {multiplier}')
             cannonball.xSpeed = dcos(cannon.rotateAngle) * multiplier
             cannonball.ySpeed = dsin(cannon.rotateAngle) * multiplier
+            app.pew.play(restart=True)
+            cannonball.visible = True
             print(cannonball.xSpeed, cannonball.ySpeed)
-            app.allowMove = True
+            
 
 
 def onStep():
@@ -89,7 +97,9 @@ def onStep():
         elif powerSlider.y1 >= powerBar.bottom:
             app.slideInc = abs(app.slideInc)
     if app.firing:
-        app.pew.play(restart=True)
-        app.firing = False
-
+        cannonball.centerX += cannonball.xSpeed
+        cannonball.centerY += cannonball.ySpeed
+        # app.firing = False
+    
+    
 
