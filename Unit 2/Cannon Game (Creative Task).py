@@ -1,28 +1,23 @@
 import random
 import math
 
+
 app.background = 'skyBlue'
-app.step = 0
-app.startStep = 0
-app.endStep = 0
-app.slideInc = 6
-app.allowMove = True
-app.powerSlide = False
-app.firing = False
-app.firingStep = 0
-app.firingPower = 0
-app.gravity = True
-app.gravityForce = 9.81 # m/s^
-app.singleSplat = 0
-app.splats = []
-
-
+app.slideInc = 6 # Power slider increment
+app.allowMove = True # Allow cannon movement
+app.powerSlide = False # Is the power slider moving?
+app.firing = False # Is the cannonball being fired?
+app.firingPower = 0 # Firepower multiplier
+app.gravity = True # Gravity toggle
+app.gravityForce = 9.81 # m/s^2
+app.singleSplat = False # Only allow one splat per cannonball
+app.splats = [] # List of splats
 
 app.pew = Sound('https://cdn.script-ware.net/pew.mp3')
 app.splat = Sound('https://cdn.script-ware.net/splat.mp3')
 
-# Oval(55,360,15,26,fill='black')
-# Oval(70,360,15,26,fill='black')
+
+# Cannon
 cannon = Group(
 Rect(30,350,40,20,fill='darkSlateGray'),
 Arc(30,360,25,20,180,180,fill='darkSlateGray'), # Back of arc coordinates: 20,360
@@ -30,19 +25,17 @@ Circle(70,360,1,fill=None)
 )
 cannonball = Circle(cannon.children[2].centerX,cannon.children[2].centerY,5,fill='black')
 cannonball.visible = False
-cannonball.mass = 5 # kg
-cannon.step = 0
 
+# Cannon Base
 Rect(0,400,50,20,align='bottom-left',fill='saddleBrown')
 Arc(25,380,25,25,-90,180,fill='sienna')
 Polygon(0,380,0,320,50,380,fill='saddleBrown')
 
+# Shot Power Slider
 Rect(9,251,22,222,align='bottom-left') # Border was slightly uneven so this works better
 powerBar = Rect(10,250,20,220,align='bottom-left',fill=gradient('red','yellow','green',start='bottom'))
 powerSlider = Line(5,250,35,250,visible=False)
 
-# -72.24737361476635
-# 9.19365166790858
 
 def generateSplat(center_x:float, center_y:float, radius:float, num_ovals:int=6) -> Group:
     splat = Group(
@@ -70,6 +63,7 @@ def generateSplat(center_x:float, center_y:float, radius:float, num_ovals:int=6)
     
     return splat
 
+
 def mapToRange(value:float, leftMin:float, leftMax:float, rightMin:float, rightMax:float) -> float:
     leftSpan = leftMax - leftMin
     rightSpan = rightMax - rightMin
@@ -86,6 +80,7 @@ def onMouseMove(mouseX,mouseY):
     if angleToMouse > -72 and angleToMouse < 9 and app.allowMove:
         cannon.rotateAngle = angleToMouse
 
+
 def onMousePress(mouseX,mouseY):
     if not app.firing:
         if not app.powerSlide:
@@ -98,23 +93,18 @@ def onMousePress(mouseX,mouseY):
         elif app.powerSlide:
             app.powerSlide = False
             app.firing = True
-            cannon.step = 0
-            app.firingStep = 0
             
             cannonball.centerX = cannon.children[2].centerX
             cannonball.centerY = cannon.children[2].centerY
-            cannonball.step = 0
             app.firingPower = mapToRange(abs(powerSlider.y1 - powerBar.bottom), 0, 250, 0, 20)
             cannonball.xSpeed = dcos(cannon.rotateAngle) * app.firingPower
             cannonball.ySpeed = dsin(cannon.rotateAngle) * app.firingPower
             app.pew.play(restart=True)
             cannonball.visible = True
             app.singleSplat = False
-            
 
 
 def onStep():
-    app.step += 1
     if app.powerSlide: # Bounce the slider up and down
         powerSlider.y1 -= app.slideInc
         powerSlider.y2 -= app.slideInc
