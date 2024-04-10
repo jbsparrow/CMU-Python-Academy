@@ -64,8 +64,8 @@ class mirror():
         return self.insertAttributes(newShape, shapeAttributes)
 
     def mirrorArc(self, arc):
-        shapeAttributes = {'fill': arc.fill, 'border': arc.border, 'borderWidth': arc.borderWidth, 'opacity': arc.opacity, 'dashes': arc.dashes, 'centerX': 400 - arc.centerX, 'centerY': arc.centerY}
-        newShape = Arc(0, 0, arc.width*2, arc.height*2, arc.startAngle-90, arc.sweepAngle)
+        shapeAttributes = {'fill': arc.fill, 'border': arc.border, 'borderWidth': arc.borderWidth, 'opacity': arc.opacity, 'dashes': arc.dashes, 'centerX': 400 - arc.centerX, 'centerY': arc.centerY, 'width': arc.width, 'height': arc.height}
+        newShape = Arc(0, 0, arc.width*2, arc.height*2, arc.startAngle+180, arc.sweepAngle)
         return self.insertAttributes(newShape, shapeAttributes)
 
 
@@ -96,14 +96,8 @@ class mirror():
 
 
 Line(15,336,385,336)
-w=Line(15,336,8,233)
-w2 = mirror(w)
-o = Arc(200, 200, 200, 100, 0, 180, opacity=20)
-m = mirror(o)
-
-
-
-# shapeList = [Rect(200, 200, 20, 40), Oval(200, 200, 60, 30), Circle(200, 200, 20), Line(0, 200, 400, 200, arrowStart=True, arrowEnd=True), Label('Hello World', 200, 50, size=18), RegularPolygon(200, 200, 20, 3), Star(200, 200, 30, 5), Polygon(25, 25, 150, 25, 200, 200, 100, 250, 25, 200), Arc(200, 200, 200, 100, 0, 90)]
+mirror(Line(15,336,8,233))
+Arc(8,223,)
 
 def onStep():
     pass
