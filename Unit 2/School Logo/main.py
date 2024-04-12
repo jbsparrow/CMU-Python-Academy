@@ -1,5 +1,3 @@
-import math
-
 jag = Image('https://cdn.script-ware.net/jag.jpg', 200, 200, opacity=50, align='center')
 jag.width = 390
 jag.height = 366
