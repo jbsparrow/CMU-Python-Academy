@@ -1,9 +1,50 @@
-jag = Image('https://cdn.script-ware.net/jag.jpg', 200, 200, opacity=100, align='center')
+import math
+
+jag = Image('https://cdn.script-ware.net/jag.jpg', 200, 200, opacity=50, align='center')
 jag.width = 390
 jag.height = 366
 jag.centerX = 200
 jag.centerY = 200
 
+def Point(x,y):
+    return [x,y]
+
+
+app.bzPoint = 0
+app.bezier = Polygon(0,0,1,1,fill=rgb(67,67,67),border='black',opacity=60)
+app.p0 = Point(67,87)
+app.p1 = Point(82,76)
+app.p2 = Point(94,200)
+app.p3 = Point(121,65)
+app.bezierPolygonalPoints = 5
+app.polypoints = Label(str(app.bezierPolygonalPoints), 20, 20, size=12, fill='black')
+app.p0Label = Label('1', app.p0[0], app.p0[1], size=12, fill='crimson')
+app.p1Label = Label('2', app.p1[0], app.p1[1], size=12, fill='crimson')
+app.p2Label = Label('3', app.p2[0], app.p2[1], size=12, fill='crimson')
+app.p3Label = Label('4', app.p3[0], app.p3[1], size=12, fill='crimson')
+
+def cubic_bezier(t: int, P0: tuple, P1: tuple, P2: tuple, P3: tuple) -> tuple:
+    """Calculate the point on the cubic Bezier curve for current time(t)."""
+    x = (1 - t)**3 * P0[0] + 3 * (1 - t)**2 * t * P1[0] + 3 * (1 - t) * t**2 * P2[0] + t**3 * P3[0]
+    y = (1 - t)**3 * P0[1] + 3 * (1 - t)**2 * t * P1[1] + 3 * (1 - t) * t**2 * P2[1] + t**3 * P3[1]
+    return (x, y)
+
+def draw_bezier(control_points: list[tuple], num_segments: int) -> Polygon:
+    """Draws a bezier curve with the specified control points and segments."""
+    P0, P1, P2, P3 = control_points
+    points = [cubic_bezier(t / num_segments, P0, P1, P2, P3) for t in range(num_segments + 1)]
+    shape = Polygon(0,0,1,1,fill=rgb(67,67,67),border='black',opacity=60)
+    pointList = [[x, y] for x, y in points]
+    setattr(shape, 'pointList', pointList)
+    return shape
+
+def draw_bezier_sketch(control_points: list[tuple], num_segments:int) -> None:
+    """Draws a bezier curve with the specified control points and segments that is to be used for designing the drawing. Points can be exported by pressing return."""
+    P0, P1, P2, P3 = control_points
+    points = [cubic_bezier(t / num_segments, P0, P1, P2, P3) for t in range(num_segments + 1)]
+    pointList = [[x, y] for x, y in points]
+    setattr(app.bezier, 'pointList', pointList)
+    return None
 
 class mirror():
     def __init__(self, shape):
@@ -100,9 +141,56 @@ class mirror():
         elif isinstance(self.shape, Arc):
             return self.mirrorArc(self.shape)
 
+polyOpacity = 100
+# Polygon(200,370,178,352,162,336,82,215,77,203,68,169,65,149,64,123,65,96,67,87,70,84,82,76,94,71,110,66,121,65,    306,71,307,72,318,76,330,84,333,87,335,96,336,123,335,149,332,169,323,203,318,215,238,336,222,352,     fill=gradient(rgb(133,179,208), 'white', rgb(133,179,208),start='left'),border='black',opacity=polyOpacity)
+# Polygon(200,336,15,336,8,233,7,213,10,196,14,176,32,188,49,198,67,207,84,214,98,218,110,221,123,224,137,226,150,228,161,229,175,230,183,230,193,230,201,230,200,230,        199,230,207,230,217,230,225,230,239,229,250,228,263,226,277,224,290,221,302,218,316,214,333,207,351,198,368,188,386,176,390,196,393,213,392,233,385,336,fill=gradient('white', rgb(133,179,208)),border='black',opacity=polyOpacity)
 
-Polygon(200,370,178,352,162,336,82,215,77,203,68,169,65,149,64,123,65,96,67,87,70,84,82,76,94,71,110,66,121,65,    306,71,307,72,318,76,330,84,333,87,335,96,336,123,335,149,332,169,323,203,318,215,238,336,222,352,     fill=gradient(rgb(133,179,208), 'white', rgb(133,179,208),start='left'),border='black',opacity=50)
-Polygon(200,336,15,336,8,233,7,213,10,196,14,176,32,188,49,198,67,207,84,214,98,218,110,221,123,224,137,226,150,228,161,229,175,230,183,230,193,230,201,230,200,230,        199,230,207,230,217,230,225,230,239,229,250,228,263,226,277,224,290,221,302,218,316,214,333,207,351,198,368,188,386,176,390,196,393,213,392,233,385,336,fill=gradient('white', rgb(133,179,208)),border='black',opacity=50)
+draw_bezier([(264, 217), (262, 240), (228, 245), (212, 214)], 15)
+
+jag.toFront()
+
+def onKeyPress(key):
+    if key == '0':
+        app.bzPoint = 0
+    elif key == '1':
+        app.bzPoint = 1
+    elif key == '2':
+        app.bzPoint = 2
+    elif key == '3':
+        app.bzPoint = 3
+    elif key == '4':
+        app.bzPoint = 4
+    elif key == 'up' or key == '=':
+        app.bezierPolygonalPoints += 1
+        draw_bezier_sketch([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+        app.polypoints.value = str(app.bezierPolygonalPoints)
+    elif key == 'down' or key == '-':
+        if app.bezierPolygonalPoints > 2:
+            app.bezierPolygonalPoints -= 1
+            draw_bezier_sketch([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+            app.polypoints.value = str(app.bezierPolygonalPoints)
+    elif key == 'enter':
+        print(f"draw_bezier({[tuple(app.p0), tuple(app.p1), tuple(app.p2), tuple(app.p3)]}, {app.bezierPolygonalPoints})")
+
+
+def onMouseDrag(x, y):
+    if app.bzPoint == 1:
+        app.p0 = Point(x, y)
+        app.p0Label.centerX = x
+        app.p0Label.centerY = y
+    elif app.bzPoint == 2:
+        app.p1 = Point(x, y)
+        app.p1Label.centerX = x
+        app.p1Label.centerY = y
+    elif app.bzPoint == 3:
+        app.p2 = Point(x, y)
+        app.p2Label.centerX = x
+        app.p2Label.centerY = y
+    elif app.bzPoint == 4:
+        app.p3 = Point(x, y)
+        app.p3Label.centerX = x
+        app.p3Label.centerY = y
+    draw_bezier_sketch([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
 
 
 
