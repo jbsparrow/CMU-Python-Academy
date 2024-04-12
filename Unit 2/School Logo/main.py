@@ -48,17 +48,40 @@ def draw_bezier_sketch(control_points: list[tuple], num_segments:int) -> None:
     setattr(app.bezier, 'pointList', pointList)
     return None
 
-def draw_bezier_with_lines(control_points, num_segments):
-    """Draws a bezier curve with the specified control points and segments using lines."""
+def create_bezier_group(control_points, num_segments):
+    """Create a group of line segments to represent the Bezier curve."""
     P0, P1, P2, P3 = control_points
     points = [cubic_bezier(t / num_segments, P0, P1, P2, P3) for t in range(num_segments + 1)]
-    group = Group()
+    bezier_group = Group()
     for i in range(len(points) - 1):
         line = Line(points[i][0], points[i][1], points[i + 1][0], points[i + 1][1])
-        group.add(line)
-    return group
+        bezier_group.add(line)
+    return bezier_group
 
-draw_bezier_with_lines([app.p0,app.p1,app.p2,app.p3],15)
+def update_bezier_group(bezier_group, control_points, num_segments):
+    """Efficiently update the group of line segments for the Bezier curve."""
+    P0, P1, P2, P3 = control_points
+    points = [cubic_bezier(t / num_segments, P0, P1, P2, P3) for t in range(num_segments + 1)]
+    current_lines = len(bezier_group.children)
+    
+    # Update existing lines or add new ones if necessary
+    for i,line in enumerate(bezier_group.children):
+        if i < current_lines:
+            line.x1 = points[i][0]
+            line.y1 = points[i][1]
+            line.x2 = points[i + 1][0]
+            line.y2 = points[i + 1][1]
+        else:
+            new_line = Line(points[i][0], points[i][1], points[i + 1][0], points[i + 1][1])
+            bezier_group.add(new_line)
+    
+    # Remove excess lines if the number of segments decreased
+    while current_lines > num_segments:
+        bezier_group.remove(bezier_group.getChild(current_lines - 1))
+        current_lines -= 1
+
+
+app.bezierLine = create_bezier_group([app.p0,app.p1,app.p2,app.p3],15)
 
 class mirror():
     def __init__(self, shape):
@@ -183,12 +206,14 @@ def onKeyPress(key):
         app.selectedPoint.value = '4'
     elif key == 'up' or key == '=':
         app.bezierPolygonalPoints += 1
-        draw_bezier_sketch([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+        # draw_bezier_sketch([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+        update_bezier_group(app.bezierLine, [app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
         app.polypoints.value = str(app.bezierPolygonalPoints)
     elif key == 'down' or key == '-':
         if app.bezierPolygonalPoints > 2:
             app.bezierPolygonalPoints -= 1
-            draw_bezier_sketch([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+            # draw_bezier_sketch([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+            update_bezier_group(app.bezierLine, [app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
             app.polypoints.value = str(app.bezierPolygonalPoints)
     elif key == 'enter':
         print(f"draw_bezier({[tuple(app.p0), tuple(app.p1), tuple(app.p2), tuple(app.p3)]}, {app.bezierPolygonalPoints})")
@@ -211,7 +236,8 @@ def onMouseDrag(x, y):
         app.p3 = Point(x, y)
         app.p3Label.centerX = x
         app.p3Label.centerY = y
-    draw_bezier_sketch([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+    # draw_bezier_sketch([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+    update_bezier_group(app.bezierLine, [app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
 
 
 
