@@ -153,14 +153,19 @@ jag.toFront()
 def onKeyPress(key):
     if key == '0':
         app.bzPoint = 0
+        app.selectedPoint.value = 'N'
     elif key == '1':
         app.bzPoint = 1
+        app.selectedPoint.value = '1'
     elif key == '2':
         app.bzPoint = 2
+        app.selectedPoint.value = '2'
     elif key == '3':
         app.bzPoint = 3
+        app.selectedPoint.value = '3'
     elif key == '4':
         app.bzPoint = 4
+        app.selectedPoint.value = '4'
     elif key == 'up' or key == '=':
         app.bezierPolygonalPoints += 1
         draw_bezier_sketch([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
