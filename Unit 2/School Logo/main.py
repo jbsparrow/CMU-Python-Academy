@@ -11,7 +11,6 @@ def Point(x,y):
 
 
 app.bzPoint = 0
-app.bezier = Polygon(0,0,1,1,fill=rgb(67,67,67),border='black',opacity=60)
 app.p0 = Point(67,87)
 app.p1 = Point(82,76)
 app.p2 = Point(94,200)
@@ -39,6 +38,8 @@ def draw_bezier(control_points: list[tuple], num_segments: int) -> Polygon:
     setattr(shape, 'pointList', pointList)
     return shape
 
+app.bezier = draw_bezier([app.p0,app.p1,app.p2,app.p3],15)
+
 def draw_bezier_sketch(control_points: list[tuple], num_segments:int) -> None:
     """Draws a bezier curve with the specified control points and segments that is to be used for designing the drawing. Points can be exported by pressing return."""
     P0, P1, P2, P3 = control_points
@@ -46,6 +47,18 @@ def draw_bezier_sketch(control_points: list[tuple], num_segments:int) -> None:
     pointList = [[x, y] for x, y in points]
     setattr(app.bezier, 'pointList', pointList)
     return None
+
+def draw_bezier_with_lines(control_points, num_segments):
+    """Draws a bezier curve with the specified control points and segments using lines."""
+    P0, P1, P2, P3 = control_points
+    points = [cubic_bezier(t / num_segments, P0, P1, P2, P3) for t in range(num_segments + 1)]
+    group = Group()
+    for i in range(len(points) - 1):
+        line = Line(points[i][0], points[i][1], points[i + 1][0], points[i + 1][1])
+        group.add(line)
+    return group
+
+draw_bezier_with_lines([app.p0,app.p1,app.p2,app.p3],15)
 
 class mirror():
     def __init__(self, shape):
