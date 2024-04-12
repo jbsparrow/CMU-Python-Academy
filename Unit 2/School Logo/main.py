@@ -148,6 +148,8 @@ polyOpacity = 100
 
 draw_bezier([(264, 217), (262, 240), (228, 245), (212, 214)], 15)
 
+draw_bezier([(211, 214), (159, 145), (82, 220), (176, 157)], 15)
+
 jag.toFront()
 
 def onKeyPress(key):
