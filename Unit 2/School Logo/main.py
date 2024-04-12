@@ -16,8 +16,9 @@ app.p0 = Point(67,87)
 app.p1 = Point(82,76)
 app.p2 = Point(94,200)
 app.p3 = Point(121,65)
-app.bezierPolygonalPoints = 5
+app.bezierPolygonalPoints = 15
 app.polypoints = Label(str(app.bezierPolygonalPoints), 20, 20, size=12, fill='black')
+app.selectedPoint = Label(str(app.bzPoint) if app.bzPoint != 0 else 'N', 40,20,size=12,fill='crimson')
 app.p0Label = Label('1', app.p0[0], app.p0[1], size=12, fill='crimson')
 app.p1Label = Label('2', app.p1[0], app.p1[1], size=12, fill='crimson')
 app.p2Label = Label('3', app.p2[0], app.p2[1], size=12, fill='crimson')
