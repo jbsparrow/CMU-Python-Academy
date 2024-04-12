@@ -1,4 +1,4 @@
-jag = Image('https://cdn.script-ware.net/jag.jpg', 200, 200, opacity=5, align='center')
+jag = Image('https://cdn.script-ware.net/jag.jpg', 200, 200, opacity=100, align='center')
 jag.width = 390
 jag.height = 366
 jag.centerX = 200
@@ -8,7 +8,8 @@ jag.centerY = 200
 class mirror():
     def __init__(self, shape):
         self.shape = shape
-        self.mirrorShape()
+        self.mirroredShape = self.mirrorShape()
+        return self.mirroredShape
 
     def insertAttributes(self, shape, dict: dict):
         for key, value in dict.items():
@@ -59,8 +60,11 @@ class mirror():
         points = polygon.pointList # structure: [[x1, y1], [x2, y2], ...]
         newPoints = []
         for point in points:
-            newPoints.append([400 - point[0], point[1]])
+            newPoints.append(400 - point[0])
+            newPoints.append(point[1])
+            # newPoints.append(400 - point[0])
         newShape = Polygon(*newPoints)
+        # print(newPoints[::-1])
         return self.insertAttributes(newShape, shapeAttributes)
 
     def mirrorArc(self, arc):
@@ -69,7 +73,9 @@ class mirror():
         return self.insertAttributes(newShape, shapeAttributes)
 
 
-    def mirrorShape(self):
+    def mirrorShape(self, shape=None):
+        if shape != None:
+            self.shape = shape
         if isinstance(self.shape, Group):
             mirroredShapes = Group()
             for child in self.shape.children:
@@ -95,9 +101,13 @@ class mirror():
             return self.mirrorArc(self.shape)
 
 
-Line(15,336,385,336)
-mirror(Line(15,336,8,233))
-Arc(8,223,)
+Polygon(200,370,178,352,162,336,82,215,77,203,68,169,65,149,64,123,65,96,67,87,70,84,82,76,94,71,110,66,121,65,    306,71,307,72,318,76,330,84,333,87,335,96,336,123,335,149,332,169,323,203,318,215,238,336,222,352,     fill=gradient(rgb(133,179,208), 'white', rgb(133,179,208),start='left'),border='black',opacity=50)
+Polygon(200,336,15,336,8,233,7,213,10,196,14,176,32,188,49,198,67,207,84,214,98,218,110,221,123,224,137,226,150,228,161,229,175,230,183,230,193,230,201,230,200,230,        199,230,207,230,217,230,225,230,239,229,250,228,263,226,277,224,290,221,302,218,316,214,333,207,351,198,368,188,386,176,390,196,393,213,392,233,385,336,fill=gradient('white', rgb(133,179,208)),border='black',opacity=50)
+# Arc(200,176,386,90,90,180,fill=None,opacity=30,border='black')
+# Arc(8,223,18,48,180,250,fill=None,border='black',opacity=15)
+# mirror(Polygon(200,370,162,336,84,214,79,203,fill=None,border='black',opacity=50))
+
+
 
 def onStep():
     pass
