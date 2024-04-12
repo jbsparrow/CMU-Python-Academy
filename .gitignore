@@ -162,3 +162,6 @@ Incredible Image Rasterizer/rasterized_image_output.py
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 Unit 2/School logo/cmu_graphics
+.DS_Store
+Unit 2/.DS_Store
+Unit 2/School Logo/.DS_Store
