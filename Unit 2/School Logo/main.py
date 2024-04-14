@@ -5,6 +5,11 @@ jag.centerX = 200
 jag.centerY = 200
 
 
+class app():
+    pass
+
+
+
 def Point(x,y):
     return [x,y]
 
@@ -84,6 +89,7 @@ app.bezierLine = create_bezier_group([app.p0,app.p1,app.p2,app.p3],15)
 app.bezierLines = Group()
 app.selectingNewStart = False
 app.selectedStart = 0
+app.lockedPoint = 0
 
 class mirror():
     def __init__(self, shape):
@@ -188,12 +194,18 @@ draw_bezier([(264, 217), (262, 240), (228, 245), (212, 214)], 15)
 
 draw_bezier([(211, 214), (159, 145), (82, 220), (176, 157)], 15)
 
-jag.toFront()
+# jag.toFront()
+
+app.selectedStartPoint = Circle(app.p0[0], app.p0[1], 5, fill='crimson', border='black', borderWidth=1, visible=False)
 app.bezier.toFront()
 app.bezier.visible = False
 app.bezierLine.toFront()
-app.selectedStartPoint = Circle(app.p0[0], app.p0[1], 5, fill='crimson', border='black', borderWidth=1, visible=False)
 # app.bezierLine.visible = False
+
+app.p0Label.toFront()
+app.p1Label.toFront()
+app.p2Label.toFront()
+app.p3Label.toFront()
 
 
 def changeStartPoint():
@@ -221,30 +233,26 @@ def onKeyPress(key):
 
     if app.selectingNewStart and key == 'left':
         if app.selectedStart == 1:
-            if app.p0[0] < app.p3[0]:
-                app.selectedStart = 4
-            else:
-                app.selectedStart = 1
-        else:  # Currently selected start is 4
-            if app.p3[0] < app.p0[0]:
-                app.selectedStart = 1
-            else:
-                app.selectedStart = 4
+            app.selectedStart = 4
+        else:
+            app.selectedStart = 1
         changeStartPoint()
 
     if app.selectingNewStart and key == 'right':
         if app.selectedStart == 1:
-            if app.p0[0] > app.p3[0]:
-                app.selectedStart = 4
-            else:
-                app.selectedStart = 1
-        else:  # Currently selected start is 4
-            if app.p3[0] > app.p0[0]:
-                app.selectedStart = 1
-            else:
-                app.selectedStart = 4
-        changeStartPoint()
+            app.selectedStart = 4
+        else:
+            app.selectedStart = 1
+        changeStartPoint() 
 
+    if app.selectingNewStart and key == 'enter':
+        app.selectingNewStart = False
+        app.selectedStartPoint.visible = False
+        app.bezierLines.add(app.bezierLine)
+        app.bezierLine = create_bezier_group([app.p0,app.p1,app.p2,app.p3],15)
+        app.lockedPoint = app.selectedStart
+        app.bezierLines.toFront()
+        app.bezierLine.toFront()
 
 
     if key == '0':
@@ -278,22 +286,26 @@ def onKeyPress(key):
 
 
 def onMouseDrag(x, y):
-    if app.bzPoint == 1:
+    if app.bzPoint == 1 and app.lockedPoint != 1:
         app.p0 = Point(x, y)
         app.p0Label.centerX = x
         app.p0Label.centerY = y
+        app.p0Label.toFront()
     elif app.bzPoint == 2:
         app.p1 = Point(x, y)
         app.p1Label.centerX = x
         app.p1Label.centerY = y
+        app.p1Label.toFront()
     elif app.bzPoint == 3:
         app.p2 = Point(x, y)
         app.p2Label.centerX = x
         app.p2Label.centerY = y
-    elif app.bzPoint == 4:
+        app.p2Label.toFront()
+    elif app.bzPoint == 4 and app.lockedPoint != 4:
         app.p3 = Point(x, y)
         app.p3Label.centerX = x
         app.p3Label.centerY = y
+        app.p3Label.toFront()
     # draw_bezier_sketch([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
     update_bezier_group(app.bezierLine, [app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
 
