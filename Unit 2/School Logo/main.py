@@ -4,6 +4,7 @@ jag.height = 366
 jag.centerX = 200
 jag.centerY = 200
 
+
 def Point(x,y):
     return [x,y]
 
@@ -63,23 +64,26 @@ def update_bezier_group(bezier_group, control_points, num_segments):
     current_lines = len(bezier_group.children)
     
     # Update existing lines or add new ones if necessary
-    for i,line in enumerate(bezier_group.children):
-        if i < current_lines:
+    for i in range(max(current_lines, num_segments)):
+        if i < current_lines and i < num_segments:
+            line = bezier_group.children[i]
             line.x1 = points[i][0]
             line.y1 = points[i][1]
             line.x2 = points[i + 1][0]
             line.y2 = points[i + 1][1]
-        else:
+        elif i >= current_lines and i < num_segments:
             new_line = Line(points[i][0], points[i][1], points[i + 1][0], points[i + 1][1])
             bezier_group.add(new_line)
-    
+
     # Remove excess lines if the number of segments decreased
-    while current_lines > num_segments:
-        bezier_group.remove(bezier_group.getChild(current_lines - 1))
-        current_lines -= 1
+    while len(bezier_group.children) > num_segments:
+        bezier_group.remove(bezier_group.children[-1])
 
 
 app.bezierLine = create_bezier_group([app.p0,app.p1,app.p2,app.p3],15)
+app.bezierLines = Group()
+app.selectingNewStart = False
+app.selectedStart = 0
 
 class mirror():
     def __init__(self, shape):
@@ -185,8 +189,64 @@ draw_bezier([(264, 217), (262, 240), (228, 245), (212, 214)], 15)
 draw_bezier([(211, 214), (159, 145), (82, 220), (176, 157)], 15)
 
 jag.toFront()
+app.bezier.toFront()
+app.bezier.visible = False
+app.bezierLine.toFront()
+app.selectedStartPoint = Circle(app.p0[0], app.p0[1], 5, fill='crimson', border='black', borderWidth=1, visible=False)
+# app.bezierLine.visible = False
+
+
+def changeStartPoint():
+    if app.selectedStart == 1:
+        app.selectedStartPoint.centerX = app.p0[0]
+        app.selectedStartPoint.centerY = app.p0[1]
+    else:
+        app.selectedStartPoint.centerX = app.p3[0]
+        app.selectedStartPoint.centerY = app.p3[1]
+    if app.selectingNewStart:
+        app.selectedStartPoint.visible = True
+    else:
+        app.selectedStartPoint.visible = False
+
+
 
 def onKeyPress(key):
+    if not app.selectingNewStart and key == 'space':
+        app.selectingNewStart = True
+        if app.p0[0] > app.p3[0]:
+            app.selectedStart = 4
+        else:
+            app.selectedStart = 1
+        changeStartPoint()
+
+    if app.selectingNewStart and key == 'left':
+        if app.selectedStart == 1:
+            if app.p0[0] < app.p3[0]:
+                app.selectedStart = 4
+            else:
+                app.selectedStart = 1
+        else:  # Currently selected start is 4
+            if app.p3[0] < app.p0[0]:
+                app.selectedStart = 1
+            else:
+                app.selectedStart = 4
+        changeStartPoint()
+
+    if app.selectingNewStart and key == 'right':
+        if app.selectedStart == 1:
+            if app.p0[0] > app.p3[0]:
+                app.selectedStart = 4
+            else:
+                app.selectedStart = 1
+        else:  # Currently selected start is 4
+            if app.p3[0] > app.p0[0]:
+                app.selectedStart = 1
+            else:
+                app.selectedStart = 4
+        changeStartPoint()
+
+
+
     if key == '0':
         app.bzPoint = 0
         app.selectedPoint.value = 'N'
