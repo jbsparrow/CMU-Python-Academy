@@ -1,0 +1,16 @@
+Jaguars Title Holder:
+
+[{"Control Points": [[16, 335], [175, 335], [225, 335], [384, 335]], "Number of Segments": 15}, {"Control Points": [[16, 335], [14, 289], [0, 217], [13, 175]], "Number of Segments": 15}, {"Control Points": [[386, 177], [289, 263], [65, 237], [13, 175]], "Number of Segments": 30}, {"Control Points": [[386, 177], [403, 220], [384, 297], [384, 335]], "Number of Segments": 30}]
+
+Main Shield:
+
+[{"Control Points": [[200, 369], [283, 303], [348, 201], [333, 89]], "Number of Segments": 15}, {"Control Points": [[200, 369], [117, 303], [52, 201], [67, 89]], "Number of Segments": 15}, {"Control Points": [[333, 89], [267, 32], [97, 57], [67, 89]], "Number of Segments": 15}]
+
+
+
+ 
+
+
+Jaguar Outline:
+
+[{"Control Points": [[135, 224], [148, 202], [204, 202], [221, 231]], "Number of Segments": 15}, {"Control Points": [[267, 210], [265, 228], [256, 253], [221, 231]], "Number of Segments": 15}, {"Control Points": [[267, 210], [265, 228], [256, 253], [282, 184]], "Number of Segments": 1}, {"Control Points": [[266, 193], [265, 228], [256, 253], [282, 184]], "Number of Segments": 1}, {"Control Points": [[266, 193], [263, 183], [275, 164], [280, 163]], "Number of Segments": 15}, {"Control Points": [[286, 176], [195, 149], [202, 192], [280, 163]], "Number of Segments": 1}, {"Control Points": [[286, 176], [195, 149], [202, 192], [296, 157]], "Number of Segments": 1}, {"Control Points": [[318, 117], [329, 138], [310, 161], [296, 157]], "Number of Segments": 15}, {"Control Points": [[318, 117], [324, 107], [316, 109], [315, 103]], "Number of Segments": 15}, {"Control Points": [[315, 103], [320, 99], [308, 91], [299, 81]], "Number of Segments": 15}, {"Control Points": [[302, 71], [320, 99], [308, 91], [299, 81]], "Number of Segments": 1}, {"Control Points": [[302, 71], [311, 70], [310, 54], [284, 55]], "Number of Segments": 15}, {"Control Points": [[167, 40], [211, 14], [279, 39], [284, 55]], "Number of Segments": 15}, {"Control Points": [[167, 40], [147, 42], [131, 39], [107, 19]], "Number of Segments": 15}, {"Control Points": [[128, 71], [101, 48], [106, 35], [107, 19]], "Number of Segments": 15}, {"Control Points": [[128, 71], [72, 95], [59, 175], [135, 224]], "Number of Segments": 15}]
