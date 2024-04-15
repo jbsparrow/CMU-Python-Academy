@@ -185,6 +185,39 @@ def onKeyPress(key):
             app.importingItems = False
             return
 
+    # Adjust coordinates of the currently selected point
+    if key == 'e':
+        if app.bzPoint == 0 or app.bzPoint == app.lockedPoint:
+            pass
+        try:
+            print(f'\n\n\n\n\n\n\n\n\nPoint 1: {tuple(app.p0)}')
+            print(f'Point 2: {tuple(app.p1)}')
+            print(f'Point 3: {tuple(app.p2)}')
+            print(f'Point 4: {tuple(app.p3)}')
+            
+            
+            x = app.getTextInput(f'Adjust x value for point {app.bzPoint} (current: {app.bezierLine.control_points[app.bzPoint - 1][0]})')
+            if x == '':
+                x = app.bezierLine.control_points[app.bzPoint - 1][0]
+            y = app.getTextInput(f'y coordinate (current: {app.bezierLine.control_points[app.bzPoint - 1][1]})')
+            if y == '':
+                y = app.bezierLine.control_points[app.bzPoint - 1][1]
+            if app.bzPoint == 1:
+                updateSelectedPoint(app.p0Label, int(x), int(y))
+                app.p0 = Point(int(x), int(y))
+            elif app.bzPoint == 2:
+                updateSelectedPoint(app.p1Label, int(x), int(y))
+                app.p1 = Point(int(x), int(y))
+            elif app.bzPoint == 3:
+                updateSelectedPoint(app.p2Label, int(x), int(y))
+                app.p2 = Point(int(x), int(y))
+            elif app.bzPoint == 4:
+                updateSelectedPoint(app.p3Label, int(x), int(y))
+                app.p3 = Point(int(x), int(y))
+            app.bezierLine.update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+        except Exception as e:
+            print('Invalid input.')
+            print(e)
 
     if key == '0':
         app.bzPoint = 0
