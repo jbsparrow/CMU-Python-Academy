@@ -1,3 +1,6 @@
+import json
+
+
 jag = Image('https://cdn.script-ware.net/jag.jpg', 200, 200, opacity=50, align='center')
 jag.width = 390
 jag.height = 366
@@ -55,10 +58,8 @@ class Bezier:
             self.group.remove(self.group.children[-1])
 
 
-
 def Point(x,y):
-    return [x,y]
-
+    return (x,y)
 
 
 app.bzPoint = 0 # Control point selected
@@ -73,6 +74,7 @@ app.p0Label = Label('1', app.p0[0], app.p0[1], size=15, fill='crimson')
 app.p1Label = Label('2', app.p1[0], app.p1[1], size=15, fill='crimson')
 app.p2Label = Label('3', app.p2[0], app.p2[1], size=15, fill='crimson')
 app.p3Label = Label('4', app.p3[0], app.p3[1], size=15, fill='crimson')
+app.importingItems = False
 
 
 # Seamless Bezier Sketching Variables
@@ -91,7 +93,6 @@ app.p0Label.toFront()
 app.p1Label.toFront()
 app.p2Label.toFront()
 app.p3Label.toFront()
-
 
 
 def updateSelectedPoint(point, x, y):
@@ -122,6 +123,7 @@ def changeStartPoint():
     else:
         updateSelectedPoint(app.selectedStartPoint, app.p3[0], app.p3[1])
         app.bzPoint = 1
+
     if app.selectingNewStart:
         app.selectedStartPoint.visible = True
     else:
@@ -164,7 +166,24 @@ def onKeyPress(key):
         app.bezierLine = Bezier([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
         app.lockedPoint = app.selectedStart
         app.bezierLine.group.toFront()
+        updateCurrentVerticeLabel(app.selectedPoint, app.bzPoint)
         return
+
+    if key == 'i' and not app.importingItems:
+        app.importingItems = True
+        try:
+            input = app.getTextInput('Paste bezier JSON string here.')
+            try:
+                bezierList = json.loads(input)
+                for i in bezierList:
+                    app.bezierLines.append(Bezier(i["Control Points"], i["Number of Segments"]))
+                app.importingItems = False
+            except:
+                print('Invalid input.')
+                app.importingItems = False
+        except:
+            app.importingItems = False
+            return
 
 
     if key == '0':
@@ -192,7 +211,12 @@ def onKeyPress(key):
             app.bezierLine.update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
             app.polypoints.value = str(app.bezierPolygonalPoints)
     elif key == 'enter':
-        print(f"draw_bezier({[tuple(app.p0), tuple(app.p1), tuple(app.p2), tuple(app.p3)]}, {app.bezierPolygonalPoints})")
+        parameterList = []
+        for i in app.bezierLines:
+            parameters = {"Control Points": [list(v) for v in i.control_points], "Number of Segments": i.num_segments}
+            parameterList.append(parameters)
+        parameterList.append({"Control Points": [list(i) for i in app.bezierLine.control_points], "Number of Segments": app.bezierLine.num_segments})
+        print(json.dumps(parameterList))
     elif key == 't':
         if app.lockedPoint == 1:
             app.p3 = app.bezierLines[0].control_points[3]
@@ -201,8 +225,7 @@ def onKeyPress(key):
         elif app.lockedPoint == 4:
             app.p0 = app.bezierLines[0].control_points[0]
             app.bezierLine.update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
-            updateSelectedPoint(app.p0Label, app.p0[0], app.p0[1])  
-
+            updateSelectedPoint(app.p0Label, app.p0[0], app.p0[1])
 
 def onMouseDrag(x, y):
     if app.bzPoint == 1 and app.lockedPoint != 1:
