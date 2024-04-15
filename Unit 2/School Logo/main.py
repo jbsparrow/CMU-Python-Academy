@@ -84,7 +84,6 @@ app.lockedPoint = 0 # Used to lock the start point of the bezier line
 app.finalPoint = 0 # Used to bridge the last bezier line with the first one
 
 
-
 app.selectedStartPoint = Circle(app.p0[0], app.p0[1], 5, fill=None, border='black', borderWidth=1, visible=False)
 app.selectedStartPoint.toBack()
 app.bezierLine.group.toFront()
@@ -93,13 +92,6 @@ app.p1Label.toFront()
 app.p2Label.toFront()
 app.p3Label.toFront()
 
-
-# polyOpacity = 100
-# Polygon(200,370,178,352,162,336,82,215,77,203,68,169,65,149,64,123,65,96,67,87,70,84,82,76,94,71,110,66,121,65,    306,71,307,72,318,76,330,84,333,87,335,96,336,123,335,149,332,169,323,203,318,215,238,336,222,352,     fill=gradient(rgb(133,179,208), 'white', rgb(133,179,208),start='left'),border='black',opacity=polyOpacity)
-# Polygon(200,336,15,336,8,233,7,213,10,196,14,176,32,188,49,198,67,207,84,214,98,218,110,221,123,224,137,226,150,228,161,229,175,230,183,230,193,230,201,230,200,230,        199,230,207,230,217,230,225,230,239,229,250,228,263,226,277,224,290,221,302,218,316,214,333,207,351,198,368,188,386,176,390,196,393,213,392,233,385,336,fill=gradient('white', rgb(133,179,208)),border='black',opacity=polyOpacity)
-
-# Bezier([(264, 217), (262, 240), (228, 245), (212, 214)], 15)
-# Bezier([(211, 214), (159, 145), (82, 220), (176, 157)], 15)
 
 
 def updateSelectedPoint(point, x, y):
@@ -110,7 +102,6 @@ def updateSelectedPoint(point, x, y):
     app.p1Label.toFront()
     app.p2Label.toFront()
     app.p3Label.toFront()
-
 
 def updateCurrentVerticeLabel(label, value):
     if value == 0:
@@ -123,7 +114,6 @@ def updateCurrentVerticeLabel(label, value):
         label.value = str(value)
         label.fill = 'forestGreen'
     label.toFront()
-
 
 def changeStartPoint():
     if app.selectedStart == 1:
@@ -139,7 +129,6 @@ def changeStartPoint():
 
     if app.finalPoint == 0:
         app.finalPoint = app.selectedStart
-
 
 
 def onKeyPress(key):
