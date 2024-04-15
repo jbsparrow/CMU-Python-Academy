@@ -142,6 +142,10 @@ def onKeyPress(key):
             app.selectedStart = 1
         changeStartPoint()
         return
+    elif app.selectingNewStart and key == 'space':
+        app.selectingNewStart = False
+        app.selectedStartPoint.visible = False
+        return
 
     if app.selectingNewStart and key == 'left':
         if app.selectedStart == 1:
@@ -218,6 +222,53 @@ def onKeyPress(key):
         except Exception as e:
             print('Invalid input.')
             print(e)
+        return
+
+    # Mirror the last bezier line across the y-axis
+    if key == 'm':
+        app.p0 = Point(400 - app.p0[0], app.p0[1])
+        app.p1 = Point(400 - app.p1[0], app.p1[1])
+        app.p2 = Point(400 - app.p2[0], app.p2[1])
+        app.p3 = Point(400 - app.p3[0], app.p3[1])
+        app.bezierLine.update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+        updateSelectedPoint(app.p0Label, app.p0[0], app.p0[1])
+        updateSelectedPoint(app.p1Label, app.p1[0], app.p1[1])
+        updateSelectedPoint(app.p2Label, app.p2[0], app.p2[1])
+        updateSelectedPoint(app.p3Label, app.p3[0], app.p3[1])
+        return
+
+    # Mirror the last bezier line across the x-axis
+    if key == 'y':
+        app.p0 = Point(app.p0[0], 400 - app.p0[1])
+        app.p1 = Point(app.p1[0], 400 - app.p1[1])
+        app.p2 = Point(app.p2[0], 400 - app.p2[1])
+        app.p3 = Point(app.p3[0], 400 - app.p3[1])
+        app.bezierLine.update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+        updateSelectedPoint(app.p0Label, app.p0[0], app.p0[1])
+        updateSelectedPoint(app.p1Label, app.p1[0], app.p1[1])
+        updateSelectedPoint(app.p2Label, app.p2[0], app.p2[1])
+        updateSelectedPoint(app.p3Label, app.p3[0], app.p3[1])
+        return
+
+    if key == 's':
+        app.bezierPolygonalPoints =1
+        app.bezierLine.update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+        app.polypoints.value = str(app.bezierPolygonalPoints)
+        return
+
+
+    if key == 'n':
+        app.bezierPolygonalPoints = 15
+        app.bezierLine.update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+        app.polypoints.value = str(app.bezierPolygonalPoints)
+        return
+
+    if key == 'h':
+        app.p0Label.visible = not app.p0Label.visible
+        app.p1Label.visible = not app.p1Label.visible
+        app.p2Label.visible = not app.p2Label.visible
+        app.p3Label.visible = not app.p3Label.visible
+
 
     if key == '0':
         app.bzPoint = 0
@@ -239,7 +290,7 @@ def onKeyPress(key):
         app.bezierLine.update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
         app.polypoints.value = str(app.bezierPolygonalPoints)
     elif key == 'down' or key == '-':
-        if app.bezierPolygonalPoints > 2:
+        if app.bezierPolygonalPoints > 1:
             app.bezierPolygonalPoints -= 1
             app.bezierLine.update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
             app.polypoints.value = str(app.bezierPolygonalPoints)
