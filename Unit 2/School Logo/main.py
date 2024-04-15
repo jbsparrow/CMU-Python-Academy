@@ -7,6 +7,8 @@ jag.height = 366
 jag.centerX = 200
 jag.centerY = 200
 
+app.lineWidth = 1
+
 
 class Bezier:
     def __init__(self, control_points, num_segments):
@@ -27,7 +29,7 @@ class Bezier:
         points = [self.cubic_bezier(t / self.num_segments, P0, P1, P2, P3) for t in range(self.num_segments + 1)]
         group = Group()
         for i in range(len(points) - 1):
-            line = Line(points[i][0], points[i][1], points[i + 1][0], points[i + 1][1])
+            line = Line(points[i][0], points[i][1], points[i + 1][0], points[i + 1][1], lineWidth=app.lineWidth, fill='black', opacity=75)
             group.add(line)
         return group
 
@@ -50,7 +52,7 @@ class Bezier:
                 line.x2 = points[i + 1][0]
                 line.y2 = points[i + 1][1]
             elif i >= current_lines and i < self.num_segments:
-                new_line = Line(points[i][0], points[i][1], points[i + 1][0], points[i + 1][1])
+                new_line = Line(points[i][0], points[i][1], points[i + 1][0], points[i + 1][1], lineWidth=app.lineWidth, fill='black', opacity=75)
                 self.group.add(new_line)
 
         # Remove excess lines if the number of segments decreased
@@ -78,8 +80,10 @@ app.importingItems = False
 
 
 # Seamless Bezier Sketching Variables
-app.bezierLine = Bezier([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
-app.bezierLines = []
+app.bezierLines = [Bezier([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)]
+app.currentBezierIndex = 0
+app.switchingBezier = False
+app.savedPoint = Point(200,200)
 app.selectingNewStart = False
 app.selectedStart = 0 # 1 or 4 - Where to start the new bezier line
 app.lockedPoint = 0 # Used to lock the start point of the bezier line
@@ -88,7 +92,7 @@ app.finalPoint = 0 # Used to bridge the last bezier line with the first one
 
 app.selectedStartPoint = Circle(app.p0[0], app.p0[1], 5, fill=None, border='black', borderWidth=1, visible=False)
 app.selectedStartPoint.toBack()
-app.bezierLine.group.toFront()
+app.bezierLines[app.currentBezierIndex].group.toFront()
 app.p0Label.toFront()
 app.p1Label.toFront()
 app.p2Label.toFront()
@@ -132,22 +136,33 @@ def changeStartPoint():
     if app.finalPoint == 0:
         app.finalPoint = app.selectedStart
 
+def switchCurrentBezier():
+    app.p0, app.p1, app.p2, app.p3 = app.bezierLines[app.currentBezierIndex].control_points
+    app.bezierPolygonalPoints = app.bezierLines[app.currentBezierIndex].num_segments
+    app.bezierLines[app.currentBezierIndex].group.toFront()
+    updateSelectedPoint(app.p0Label, app.p0[0], app.p0[1])
+    updateSelectedPoint(app.p1Label, app.p1[0], app.p1[1])
+    updateSelectedPoint(app.p2Label, app.p2[0], app.p2[1])
+    updateSelectedPoint(app.p3Label, app.p3[0], app.p3[1])
+    app.polypoints.value = str(app.bezierPolygonalPoints)
+
 
 def onKeyPress(key):
-    if not app.selectingNewStart and key == 'space':
-        app.selectingNewStart = True
-        if app.p0[0] > app.p3[0]:
-            app.selectedStart = 4
+    if key == 'space' and not app.switchingBezier:
+        app.selectingNewStart = not app.selectingNewStart
+        if app.selectingNewStart:
+            if app.p0[0] > app.p3[0]:
+                app.selectedStart = 4
+            else:
+                app.selectedStart = 1
+            changeStartPoint()
+            return
         else:
-            app.selectedStart = 1
-        changeStartPoint()
-        return
-    elif app.selectingNewStart and key == 'space':
-        app.selectingNewStart = False
-        app.selectedStartPoint.visible = False
-        return
+            app.selectedStartPoint.visible = False
+            app.selectedStart = 0
+            return
 
-    if app.selectingNewStart and key == 'left':
+    if app.selectingNewStart and key == 'left' and not app.switchingBezier:
         if app.selectedStart == 1:
             app.selectedStart = 4
         else:
@@ -155,7 +170,7 @@ def onKeyPress(key):
         changeStartPoint()
         return
 
-    if app.selectingNewStart and key == 'right':
+    if app.selectingNewStart and key == 'right' and not app.switchingBezier:
         if app.selectedStart == 1:
             app.selectedStart = 4
         else:
@@ -163,15 +178,69 @@ def onKeyPress(key):
         changeStartPoint() 
         return
 
-    if app.selectingNewStart and key == 'enter':
+    if app.selectingNewStart and key == 'enter' and not app.switchingBezier:
         app.selectingNewStart = False
         app.selectedStartPoint.visible = False
-        app.bezierLines.append(app.bezierLine)
-        app.bezierLine = Bezier([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+        app.bezierLines.append(Bezier([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints))
+        app.currentBezierIndex += 1
         app.lockedPoint = app.selectedStart
-        app.bezierLine.group.toFront()
+        app.bezierLines[app.currentBezierIndex].group.toFront()
         updateCurrentVerticeLabel(app.selectedPoint, app.bzPoint)
         return
+
+
+    if key == '[':
+        if app.bzPoint != 0:
+            app.savedPoint = app.bezierLines[app.currentBezierIndex].control_points[app.bzPoint - 1]
+        return
+
+    if key == ']':
+        if app.bzPoint == 1:
+            app.p0 = app.savedPoint
+            updateSelectedPoint(app.p0Label, app.p0[0], app.p0[1])
+        elif app.bzPoint == 2:
+            app.p1 = app.savedPoint
+            updateSelectedPoint(app.p1Label, app.p1[0], app.p1[1])
+        elif app.bzPoint == 3:
+            app.p2 = app.savedPoint
+            updateSelectedPoint(app.p2Label, app.p2[0], app.p2[1])
+        elif app.bzPoint == 4:
+            app.p3 = app.savedPoint
+            updateSelectedPoint(app.p3Label, app.p3[0], app.p3[1])
+        app.bezierLines[app.currentBezierIndex].update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+
+
+    if key == 'x':
+        app.switchingBezier = not app.switchingBezier
+        return
+
+    if app.switchingBezier and key == 'left':
+        if app.currentBezierIndex > 0:
+            app.currentBezierIndex -= 1
+        elif app.currentBezierIndex == 0:
+            app.currentBezierIndex = len(app.bezierLines) - 1
+        switchCurrentBezier()
+        return
+
+    if app.switchingBezier and key == 'right':
+        if app.currentBezierIndex < len(app.bezierLines) - 1:
+            app.currentBezierIndex += 1
+        elif app.currentBezierIndex == len(app.bezierLines) - 1:
+            app.currentBezierIndex = 0
+        switchCurrentBezier()
+        return
+
+
+    if key == 'backspace' and not app.switchingBezier and not app.selectingNewStart and not app.importingItems:
+        # Remove the currently selected bezierLine
+        if len(app.bezierLines) > 1:
+            app.bezierLines[app.currentBezierIndex].group.clear()
+            app.bezierLines.pop(app.currentBezierIndex)
+            if app.currentBezierIndex == len(app.bezierLines):
+                app.currentBezierIndex -= 1
+            switchCurrentBezier()
+            return
+
 
     if key == 'i' and not app.importingItems:
         app.importingItems = True
@@ -200,12 +269,12 @@ def onKeyPress(key):
             print(f'Point 4: {tuple(app.p3)}')
             
             
-            x = app.getTextInput(f'Adjust x value for point {app.bzPoint} (current: {app.bezierLine.control_points[app.bzPoint - 1][0]})')
+            x = app.getTextInput(f'Adjust x value for point {app.bzPoint} (current: {app.bezierLines[app.currentBezierIndex].control_points[app.bzPoint - 1][0]})')
             if x == '':
-                x = app.bezierLine.control_points[app.bzPoint - 1][0]
-            y = app.getTextInput(f'y coordinate (current: {app.bezierLine.control_points[app.bzPoint - 1][1]})')
+                x = app.bezierLines[app.currentBezierIndex].control_points[app.bzPoint - 1][0]
+            y = app.getTextInput(f'y coordinate (current: {app.bezierLines[app.currentBezierIndex].control_points[app.bzPoint - 1][1]})')
             if y == '':
-                y = app.bezierLine.control_points[app.bzPoint - 1][1]
+                y = app.bezierLines[app.currentBezierIndex].control_points[app.bzPoint - 1][1]
             if app.bzPoint == 1:
                 updateSelectedPoint(app.p0Label, int(x), int(y))
                 app.p0 = Point(int(x), int(y))
@@ -218,7 +287,7 @@ def onKeyPress(key):
             elif app.bzPoint == 4:
                 updateSelectedPoint(app.p3Label, int(x), int(y))
                 app.p3 = Point(int(x), int(y))
-            app.bezierLine.update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+            app.bezierLines[app.currentBezierIndex].update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
         except Exception as e:
             print('Invalid input.')
             print(e)
@@ -230,7 +299,7 @@ def onKeyPress(key):
         app.p1 = Point(400 - app.p1[0], app.p1[1])
         app.p2 = Point(400 - app.p2[0], app.p2[1])
         app.p3 = Point(400 - app.p3[0], app.p3[1])
-        app.bezierLine.update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+        app.bezierLines[app.currentBezierIndex].update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
         updateSelectedPoint(app.p0Label, app.p0[0], app.p0[1])
         updateSelectedPoint(app.p1Label, app.p1[0], app.p1[1])
         updateSelectedPoint(app.p2Label, app.p2[0], app.p2[1])
@@ -243,7 +312,7 @@ def onKeyPress(key):
         app.p1 = Point(app.p1[0], 400 - app.p1[1])
         app.p2 = Point(app.p2[0], 400 - app.p2[1])
         app.p3 = Point(app.p3[0], 400 - app.p3[1])
-        app.bezierLine.update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+        app.bezierLines[app.currentBezierIndex].update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
         updateSelectedPoint(app.p0Label, app.p0[0], app.p0[1])
         updateSelectedPoint(app.p1Label, app.p1[0], app.p1[1])
         updateSelectedPoint(app.p2Label, app.p2[0], app.p2[1])
@@ -252,14 +321,14 @@ def onKeyPress(key):
 
     if key == 's':
         app.bezierPolygonalPoints =1
-        app.bezierLine.update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+        app.bezierLines[app.currentBezierIndex].update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
         app.polypoints.value = str(app.bezierPolygonalPoints)
         return
 
 
     if key == 'n':
         app.bezierPolygonalPoints = 15
-        app.bezierLine.update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+        app.bezierLines[app.currentBezierIndex].update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
         app.polypoints.value = str(app.bezierPolygonalPoints)
         return
 
@@ -287,28 +356,27 @@ def onKeyPress(key):
         updateCurrentVerticeLabel(app.selectedPoint, app.bzPoint)
     elif key == 'up' or key == '=':
         app.bezierPolygonalPoints += 1
-        app.bezierLine.update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+        app.bezierLines[app.currentBezierIndex].update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
         app.polypoints.value = str(app.bezierPolygonalPoints)
     elif key == 'down' or key == '-':
         if app.bezierPolygonalPoints > 1:
             app.bezierPolygonalPoints -= 1
-            app.bezierLine.update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+            app.bezierLines[app.currentBezierIndex].update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
             app.polypoints.value = str(app.bezierPolygonalPoints)
     elif key == 'enter':
         parameterList = []
         for i in app.bezierLines:
             parameters = {"Control Points": [list(v) for v in i.control_points], "Number of Segments": i.num_segments}
             parameterList.append(parameters)
-        parameterList.append({"Control Points": [list(i) for i in app.bezierLine.control_points], "Number of Segments": app.bezierLine.num_segments})
         print(json.dumps(parameterList))
     elif key == 't':
         if app.lockedPoint == 1:
             app.p3 = app.bezierLines[0].control_points[3]
-            app.bezierLine.update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+            app.bezierLines[app.currentBezierIndex].update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
             updateSelectedPoint(app.p3Label, app.p3[0], app.p3[1])
         elif app.lockedPoint == 4:
             app.p0 = app.bezierLines[0].control_points[0]
-            app.bezierLine.update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+            app.bezierLines[app.currentBezierIndex].update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
             updateSelectedPoint(app.p0Label, app.p0[0], app.p0[1])
 
 def onMouseDrag(x, y):
@@ -324,7 +392,7 @@ def onMouseDrag(x, y):
     elif app.bzPoint == 4 and app.lockedPoint != 4:
         app.p3 = Point(x, y)
         updateSelectedPoint(app.p3Label, x, y)
-    app.bezierLine.update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
+    app.bezierLines[app.currentBezierIndex].update([app.p0, app.p1, app.p2, app.p3], app.bezierPolygonalPoints)
 
 
 
