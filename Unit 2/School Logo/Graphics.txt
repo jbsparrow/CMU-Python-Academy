@@ -1,16 +1,63 @@
 Jaguars Title Holder:
-
 [{"Control Points": [[16, 335], [175, 335], [225, 335], [384, 335]], "Number of Segments": 15}, {"Control Points": [[16, 335], [14, 289], [0, 217], [13, 175]], "Number of Segments": 15}, {"Control Points": [[386, 177], [289, 263], [65, 237], [13, 175]], "Number of Segments": 30}, {"Control Points": [[386, 177], [403, 220], [384, 297], [384, 335]], "Number of Segments": 30}]
 
 Main Shield:
-
 [{"Control Points": [[200, 369], [283, 303], [348, 201], [333, 89]], "Number of Segments": 15}, {"Control Points": [[200, 369], [117, 303], [52, 201], [67, 89]], "Number of Segments": 15}, {"Control Points": [[333, 89], [267, 32], [97, 57], [67, 89]], "Number of Segments": 15}]
 
 
 
- 
 
 
 Jaguar Outline:
+[{"Control Points": [[135, 224], [148, 202], [204, 202], [221, 231]], "Number of Segments": 15}, {"Control Points": [[267, 210], [265, 228], [256, 253], [221, 231]], "Number of Segments": 15}, {"Control Points": [[267, 210], [265, 228], [256, 253], [282, 184]], "Number of Segments": 1}, {"Control Points": [[266, 193], [265, 228], [256, 253], [282, 184]], "Number of Segments": 1}, {"Control Points": [[266, 193], [263, 183], [275, 164], [280, 163]], "Number of Segments": 15}, {"Control Points": [[286, 176], [195, 149], [202, 192], [280, 163]], "Number of Segments": 1}, {"Control Points": [[286, 176], [195, 149], [202, 192], [294, 159]], "Number of Segments": 1}, {"Control Points": [[318, 117], [329, 138], [310, 161], [294, 159]], "Number of Segments": 15}, {"Control Points": [[318, 117], [324, 107], [316, 109], [315, 103]], "Number of Segments": 15}, {"Control Points": [[315, 103], [320, 99], [308, 91], [299, 81]], "Number of Segments": 15}, {"Control Points": [[302, 71], [320, 99], [308, 91], [299, 81]], "Number of Segments": 1}, {"Control Points": [[302, 71], [311, 70], [310, 54], [284, 55]], "Number of Segments": 15}, {"Control Points": [[167, 40], [211, 14], [279, 39], [284, 55]], "Number of Segments": 15}, {"Control Points": [[167, 40], [147, 42], [131, 39], [107, 19]], "Number of Segments": 15}, {"Control Points": [[128, 71], [101, 48], [106, 35], [107, 19]], "Number of Segments": 15}, {"Control Points": [[128, 71], [72, 95], [59, 175], [135, 224]], "Number of Segments": 15}]
 
-[{"Control Points": [[135, 224], [148, 202], [204, 202], [221, 231]], "Number of Segments": 15}, {"Control Points": [[267, 210], [265, 228], [256, 253], [221, 231]], "Number of Segments": 15}, {"Control Points": [[267, 210], [265, 228], [256, 253], [282, 184]], "Number of Segments": 1}, {"Control Points": [[266, 193], [265, 228], [256, 253], [282, 184]], "Number of Segments": 1}, {"Control Points": [[266, 193], [263, 183], [275, 164], [280, 163]], "Number of Segments": 15}, {"Control Points": [[286, 176], [195, 149], [202, 192], [280, 163]], "Number of Segments": 1}, {"Control Points": [[286, 176], [195, 149], [202, 192], [296, 157]], "Number of Segments": 1}, {"Control Points": [[318, 117], [329, 138], [310, 161], [296, 157]], "Number of Segments": 15}, {"Control Points": [[318, 117], [324, 107], [316, 109], [315, 103]], "Number of Segments": 15}, {"Control Points": [[315, 103], [320, 99], [308, 91], [299, 81]], "Number of Segments": 15}, {"Control Points": [[302, 71], [320, 99], [308, 91], [299, 81]], "Number of Segments": 1}, {"Control Points": [[302, 71], [311, 70], [310, 54], [284, 55]], "Number of Segments": 15}, {"Control Points": [[167, 40], [211, 14], [279, 39], [284, 55]], "Number of Segments": 15}, {"Control Points": [[167, 40], [147, 42], [131, 39], [107, 19]], "Number of Segments": 15}, {"Control Points": [[128, 71], [101, 48], [106, 35], [107, 19]], "Number of Segments": 15}, {"Control Points": [[128, 71], [72, 95], [59, 175], [135, 224]], "Number of Segments": 15}]
+
+
+Inside of mouth outline (black poly):
+[{"Control Points": [[212, 158], [212, 167], [212, 183], [232, 197]], "Number of Segments": 15}, {"Control Points": [[212, 158], [224, 150], [248, 145], [257, 146]], "Number of Segments": 15}, {"Control Points": [[259, 170], [224, 150], [248, 145], [257, 146]], "Number of Segments": 1}, {"Control Points": [[259, 170], [224, 150], [248, 145], [272, 151]], "Number of Segments": 1}, {"Control Points": [[279, 157], [224, 150], [248, 145], [272, 151]], "Number of Segments": 1}, {"Control Points": [[279, 157], [270, 160], [259, 177], [261, 198]], "Number of Segments": 15}, {"Control Points": [[248, 199], [255, 204], [258, 201], [261, 198]], "Number of Segments": 10}, {"Control Points": [[248, 199], [255, 204], [258, 201], [254, 185]], "Number of Segments": 1}, {"Control Points": [[231, 198], [255, 204], [258, 201], [254, 185]], "Number of Segments": 1}]
+
+
+Teeth:
+    Bottom Front Tooth (No Detailing): 
+    [{"Control Points": [[264, 213], [82, 76], [94, 200], [280, 186]], "Number of Segments": 1}, {"Control Points": [[247, 203], [82, 76], [94, 200], [280, 186]], "Number of Segments": 1}, {"Control Points": [[247, 203], [82, 76], [94, 200], [241, 212]], "Number of Segments": 1}, {"Control Points": [[265, 212], [250, 215], [261, 215], [241, 212]], "Number of Segments": 15}]
+
+    Bottom Rear Tooth (No Detailing): 
+    [{"Control Points": [[241, 212], [82, 76], [94, 200], [256, 186]], "Number of Segments": 1}, {"Control Points": [[226, 200], [82, 76], [94, 200], [256, 186]], "Number of Segments": 1}, {"Control Points": [[226, 200], [236, 213], [238, 208], [241, 212]], "Number of Segments": 15}]
+
+    Front Fang Thing: 
+    [{"Control Points": [[284, 161], [274, 168], [264, 181], [266, 194]], "Number of Segments": 15}, {"Control Points": [[261, 191], [274, 168], [264, 181], [266, 194]], "Number of Segments": 1}, {"Control Points": [[261, 191], [259, 179], [270, 160], [281, 155]], "Number of Segments": 15}, {"Control Points": [[283, 162], [259, 179], [270, 160], [281, 155]], "Number of Segments": 1}]
+
+
+Black Poly Body Detailing:
+ 
+[{"Control Points": [[91, 149], [92, 105], [120, 87], [126, 83]], "Number of Segments": 30}, {"Control Points": [[91, 149], [101, 108], [132, 91], [139, 85]], "Number of Segments": 30}, {"Control Points": [[125, 83], [101, 108], [132, 91], [139, 85]], "Number of Segments": 1}]
+
+Nose Outline (Black Poly):
+[{"Control Points": [[300, 132], [311, 124], [321, 115], [320, 111]], "Number of Segments": 6}, {"Control Points": [[279, 105], [290, 97], [311, 97], [320, 111]], "Number of Segments": 6}, {"Control Points": [[279, 105], [272, 108], [271, 109], [264, 98]], "Number of Segments": 6}, {"Control Points": [[285, 120], [273, 116], [265, 108], [264, 98]], "Number of Segments": 6}, {"Control Points": [[285, 120], [279, 115], [279, 116], [281, 113]], "Number of Segments": 6}, {"Control Points": [[300, 132], [299, 122], [287, 112], [281, 113]], "Number of Segments": 6}]
+
+Inside of nose brown 'outline' (Brown Poly):
+[{"Control Points": [[316, 111], [313, 103], [292, 97], [282, 107]], "Number of Segments": 15}, {"Control Points": [[300, 117], [290, 115], [285, 111], [282, 107]], "Number of Segments": 15}, {"Control Points": [[300, 117], [303, 117], [311, 117], [316, 111]], "Number of Segments": 15}]
+
+
+Black poly face Detail:
+[{"Control Points": [[162, 165], [82, 76], [94, 200], [159, 164]], "Number of Segments": 1}, {"Control Points": [[136, 180], [148, 177], [158, 173], [159, 164]], "Number of Segments": 15}, {"Control Points": [[136, 180], [152, 179], [158, 173], [162, 165]], "Number of Segments": 15}]
+
+
+White Whisker Polygons:
+    Top Whisker:
+    [{"Control Points": [[286, 121], [82, 76], [94, 200], [282, 125]], "Number of Segments": 1}, {"Control Points": [[286, 121], [257, 117], [197, 124], [159, 136]], "Number of Segments": 15}, {"Control Points": [[282, 125], [264, 120], [206, 125], [159, 136]], "Number of Segments": 15}]
+
+
+    Middle Whisker:
+    [{"Control Points": [[278, 127], [82, 76], [94, 200], [274, 131]], "Number of Segments": 1}, {"Control Points": [[278, 127], [241, 125], [178, 133], [144, 146]], "Number of Segments": 15}, {"Control Points": [[274, 131], [242, 130], [221, 130], [144, 146]], "Number of Segments": 15}]
+
+
+    Bottom Whisker:
+    [{"Control Points": [[270, 134], [82, 76], [94, 200], [266, 138]], "Number of Segments": 1}, {"Control Points": [[138, 153], [165, 147], [223, 135], [266, 138]], "Number of Segments": 15}, {"Control Points": [[138, 153], [185, 139], [226, 130], [270, 134]], "Number of Segments": 15}]
+
+
+
+Letters:
+
+    Interior of J/white part (stack thin white outline over thick black outline):
+    [{"Control Points": [[37, 219], [82, 76], [94, 200], [54, 225]], "Number of Segments": 1}, {"Control Points": [[37, 219], [82, 76], [94, 200], [37, 291]], "Number of Segments": 1}, {"Control Points": [[31, 295], [33, 296], [37, 296], [37, 291]], "Number of Segments": 15}, {"Control Points": [[31, 295], [33, 296], [37, 296], [31, 312]], "Number of Segments": 1}, {"Control Points": [[45, 312], [33, 296], [37, 296], [31, 312]], "Number of Segments": 1}, {"Control Points": [[45, 312], [51, 310], [54, 305], [54, 298]], "Number of Segments": 15}, {"Control Points": [[54, 225], [51, 310], [54, 305], [54, 298]], "Number of Segments": 1}]
