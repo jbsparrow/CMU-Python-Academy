@@ -189,8 +189,8 @@ def importBezier(bezierType, bezierData: str):
         return
 
     if bezierType == 'line':
-        startBezierIndex = app.currentBezierIndex + 1
-        endBezierIndex = app.currentBezierIndex + len(bezierList) + 1
+        startBezierIndex = len(app.bezierLines)
+        endBezierIndex = startBezierIndex + len(bezierList)
         for i in bezierList:
             bezierLine = Bezier(i[0], i[1])
             app.bezierLines.append(bezierLine)
@@ -481,6 +481,14 @@ def polyGen(points):
 
 app.enable_imports = True
 if app.enable_imports:
+    
+    shieldOutlineStartIndex, shieldOutlineEndIndex = importBezier('line', '[[[[68, 88], [93, 51], [305, 48], [332, 88]], 20], [[[332, 88], [354, 230], [238, 343], [200, 368]], 20], [[[200, 368], [160, 339], [46, 233], [68, 88]], 20]]')
+    for drawing in app.bezierLines[shieldOutlineStartIndex:shieldOutlineEndIndex]:
+        for child in drawing.group.children:
+            child.fill = 'black'
+            child.lineWidth = 2
+    
+    
     J_outline = importBezier('polygon', '[[[[33, 214], [82, 76], [94, 200], [58, 223]], 1], [[[58, 223], [82, 76], [94, 200], [58, 302]], 1], [[[58, 302], [58, 310], [53, 317], [43, 318]], 15], [[[43, 318], [58, 310], [53, 317], [26, 317]], 1], [[[26, 317], [58, 310], [53, 317], [27, 289]], 1], [[[27, 289], [58, 310], [53, 317], [33, 291]], 1], [[[33, 291], [58, 310], [53, 317], [33, 214]], 1]]')
     J_outline.polygon.fill = 'black'
 
@@ -513,10 +521,14 @@ if app.enable_imports:
 
     white_details = [
         '[[[[286, 121], [82, 76], [94, 200], [281, 125]], 1], [[[281, 125], [258, 120], [207, 126], [162, 137]], 15], [[[162, 137], [216, 120], [263, 117], [286, 121]], 15]]',
+        '[[[[279, 127], [82, 76], [94, 200], [274, 131]], 1], [[[274, 131], [253, 130], [203, 131], [139, 148]], 6], [[[139, 148], [196, 130], [247, 125], [279, 127]], 7]]',
+        '[[[[271, 135], [82, 76], [94, 200], [265, 138]], 1], [[[265, 138], [230, 134], [161, 146], [138, 153]], 15], [[[138, 153], [197, 134], [243, 131], [271, 135]], 15]]',
+        
     ]
     for detail in white_details:
         d=importBezier('polygon', detail)
         d.polygon.fill = 'white'
+        d.polygon.border = 'white'
 
 
 def onStep():
